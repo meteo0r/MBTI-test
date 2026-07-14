@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 성격에서 시작하는 나만의 진로 찾기 | 고도화 버전</title>
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-light: #eff6ff;
+            --secondary-color: #10b981;
+            --background-color: #f1f5f9;
+            --card-color: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border-color: #cbd5e1;
+            --accent-left: #3b82f6;
+            --accent-right: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+            text-align: center;
+            padding: 3rem 1rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 { font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; }
+        header p { font-size: 1.1rem; opacity: 0.9; }
+
+        main {
+            flex: 1;
+            max-width: 720px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            background: var(--card-color);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .intro-box { text-align: center; }
+        .intro-box h2 { margin-bottom: 1rem; color: #1e3a8a; }
+        .intro-box p { color: var(--text-muted); margin-bottom: 1.5rem; }
+        .intro-box ul { text-align: left; margin: 1.5rem auto; max-width: 450px; color: var(--text-muted); background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .intro-box li { margin-bottom: 0.5rem; list-style-position: inside; }
+
+        .privacy-note {
+            background-color: #fffbeb;
+            border: 1px solid #fef3c7;
+            color: #b45309;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+
+        .btn {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .btn:hover { background-color: #1d4ed8; transform: translateY(-1px); }
+
+        .progress-container { margin-bottom: 2.5rem; }
+        .progress-bar { background-color: #e2e8f0; border-radius: 9999px; height: 10px; overflow: hidden; }
+        .progress-fill { background-color: #2563eb; height: 100%; width: 0%; transition: width 0.3s; }
+        .progress-text { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted); margin-top: 0.5rem; font-weight: 500; }
+
+        .question-box { display: none; }
+        .question-text { font-size: 1.3rem; font-weight: 700; margin-bottom: 2rem; text-align: center; color: #1e293b; word-break: keep-all; }
+        
+        .likert-scale { display: flex; flex-direction: column; gap: 0.85rem; }
+        .likert-option {
+            display: flex;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 1.1rem;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .likert-option:hover { background: var(--primary-light); border-color: var(--primary-color); }
+        .likert-option input { margin-right: 1.2rem; width: 1.3rem; height: 1.3rem; accent-color: var(--primary-color); }
+        .likert-option span { font-size: 1rem; font-weight: 500; color: #334155; }
+
+        .nav-buttons { display: flex; gap: 1rem; margin-top: 2rem; }
+        .btn-prev { background-color: white; color: var(--text-muted); border: 1px solid var(--border-color); }
+        .btn-prev:hover { background-color: #f1f5f9; color: #0f172a; }
+
+        .result-box { display: none; }
+        .result-header { text-align: center; margin-bottom: 2.5rem; background: #fafafa; padding: 2rem; border-radius: 16px; border: 1px solid #f1f5f9; }
+        .result-mbti { font-size: 3.5rem; font-weight: 800; color: #1e3a8a; letter-spacing: 3px; }
+        .result-title { font-size: 1.4rem; color: var(--text-muted); margin-top: 0.5rem; font-weight: 700; }
+
+        .graph-section { margin-bottom: 2.5rem; }
+        .graph-row { margin-bottom: 1.5rem; }
+        .graph-labels { display: flex; justify-content: space-between; font-size: 0.95rem; font-weight: 700; margin-bottom: 0.4rem; color: #334155; }
+        .graph-track { background-color: #e2e8f0; height: 20px; border-radius: 10px; overflow: hidden; position: relative; }
+        .graph-bar { background: linear-gradient(90deg, #3b82f6, #60a5fa); height: 100%; width: 50%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .section-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; border-left: 5px solid #1e3a8a; padding-left: 10px; color: #1e3a8a; }
+        .info-block { margin-bottom: 1.5rem; background: #f8fafc; padding: 1.5rem; border-radius: 14px; border: 1px solid #e2e8f0; }
+        .info-block p { font-size: 1rem; color: #334155; }
+        
+        .tag-container { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.5rem; }
+        .job-tag { background-color: #eff6ff; color: #1e40af; padding: 0.5rem 1rem; border-radius: 30px; font-size: 0.95rem; font-weight: 600; border: 1px solid #bfdbfe; }
+
+        .action-buttons { display: flex; gap: 1rem; margin-top: 2.5rem; }
+        .btn-share { background-color: #10b981; }
+        .btn-share:hover { background-color: #059669; }
+
+        footer { text-align: center; padding: 2rem; font-size: 0.85rem; color: var(--text-muted); border-top: 1px solid #e2e8f0; background: white; margin-top: auto; }
+
+        @media print {
+            header, footer, .action-buttons, .progress-container, .nav-buttons { display: none !important; }
+            .card { box-shadow: none; padding: 0; }
+            .result-box { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>내 성격에서 시작하는 나만의 진로 찾기</h1>
+        <p>청소년을 위한 정밀형 MBTI 기반 맞춤 진로 탐색 시스템</p>
+    </header>
+
+    <main>
+        <div id="intro-card" class="card intro-box">
+            <h2>나의 정밀 진로 적성검사</h2>
+            <p>교내외 생활 기반의 균형 잡힌 문항 알고리즘을 적용하여 더욱 정확해진 성향 판별 및 진로 로드맵을 제공합니다.</p>
+            <ul>
+                <li>총 16개의 학교생활 밀착형 정밀 문항</li>
+                <li>양방향 가중치 채점 방식으로 결과 정확도 고도화</li>
+                <li>검사 결과 저장 및 인쇄 기능 제공 (상담 기초자료용)</li>
+            </ul>
+            <button class="btn" onclick="startQuiz()">정밀 진로 탐색 시작</button>
+            <div class="privacy-note">
+                <strong>🔒 개인정보 및 데이터 보안:</strong> 입력하신 답변과 결과 수치는 외부 서버로 전송되거나 저장되지 않으며, 현재 기기의 브라우저 메모리 내에서 즉시 계산 후 파기됩니다.
+            </div>
+        </div>
+
+        <div id="quiz-card" class="card question-box">
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="progress-count">질문 1 / 16</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+            </div>
+
+            <div id="question-text" class="question-text">질문 로딩 중...</div>
+            
+            <div class="likert-scale">
+                <label class="likert-option"><input type="radio" name="scale" value="5"> <span id="opt-5">매우 그렇다</span></label>
+                <label class="likert-option"><input type="radio" name="scale" value="4"> <span id="opt-4">그렇다</span></label>
+                <label class="likert-option"><input type="radio" name="scale" value="3"> <span id="opt-3">보통이다</span></label>
+                <label class="likert-option"><input type="radio" name="scale" value="2"> <span id="opt-2">아니다</span></label>
+                <label class="likert-option"><input type="radio" name="scale" value="1"> <span id="opt-1">전혀 아니다</span></label>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn btn-prev" id="btn-prev" onclick="prevQuestion()" disabled>이전 질문</button>
+                <button class="btn" id="btn-next" onclick="nextQuestion()">다음</button>
+            </div>
+        </div>
+
+        <div id="result-card" class="card result-box">
+            <div class="result-header">
+                <div id="result-mbti" class="result-mbti">----</div>
+                <div id="result-title" class="result-title">분석 중...</div>
+            </div>
+
+            <div class="graph-section">
+                <div class="section-title">지표별 정밀 비중 분석</div>
+                <div class="graph-row">
+                    <div class="graph-labels"><span>외향형 (E)</span><span id="lbl-ei">50% : 50%</span><span>내향형 (I)</span></div>
+                    <div class="graph-track"><div id="bar-ei" class="graph-bar"></div></div>
+                </div>
+                <div class="graph-row">
+                    <div class="graph-labels"><span>감각형 (S)</span><span id="lbl-sn">50% : 50%</span><span>직관형 (N)</span></div>
+                    <div class="graph-track"><div id="bar-sn" class="graph-bar"></div></div>
+                </div>
+                <div class="graph-row">
+                    <div class="graph-labels"><span>사고형 (T)</span><span id="lbl-tf">50% : 50%</span><span>감정형 (F)</span></div>
+                    <div class="graph-track"><div id="bar-tf" class="graph-bar"></div></div>
+                </div>
+                <div class="graph-row">
+                    <div class="graph-labels"><span>판단형 (J)</span><span id="lbl-jp">50% : 50%</span><span>인식형 (P)</span></div>
+                    <div class="graph-track"><div id="bar-jp" class="graph-bar"></div></div>
+                </div>
+            </div>
+
+            <div class="section-title">나의 성격 강점과 약점</div>
+            <div class="info-block">
+                <p><strong>핵심 강점:</strong> <span id="txt-strengths">계산 중...</span></p>
+                <p style="margin-top:0.8rem;"><strong>약점 및 보완점:</strong> <span id="txt-weaknesses">계산 중...</span></p>
+            </div>
+
+            <div class="section-title">추천 직업군</div>
+            <div class="info-block">
+                <div id="txt-jobs" class="tag-container"></div>
+            </div>
+
+            <div class="section-title">추천 학과 및 진로 준비 방법</div>
+            <div class="info-block">
+                <p><strong>적합 학과:</strong> <span id="txt-departments">계산 중...</span></p>
+                <p style="margin-top:0.8rem;"><strong>진로 준비 팁:</strong> <span id="txt-tips">계산 중...</span></p>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-prev" onclick="restartQuiz()">다시 테스트하기</button>
+                <button class="btn btn-share" onclick="window.print()">결과 PDF 저장 / 인쇄</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 MBTI 직업 탐색 프로젝트. 본 프로그램은 학교 수업 및 진로 상담 목적으로 최적화되어 있습니다.</p>
+    </footer>
+
+    <script>
+        // 정밀 판별을 위해 문항을 16개로 보강하고 지표 가중치 방향(positive)을 명시
+        const questions = [
+            // E (외향) vs I (내향)
+            { id: 1, axis: 'EI', positive: 'E', text: "쉬는 시간이나 점심시간에 교실에 가만히 있기보다 친구들과 모여 수다 떠는 것이 즐겁다." },
+            { id: 2, axis: 'EI', positive: 'I', text: "조별 과제를 할 때 의견을 주도적으로 내기보다 다른 친구들의 의견을 먼저 듣는 편이 편하다." },
+            { id: 3, axis: 'EI', positive: 'E', text: "주말에 집에 혼자 있으면 심심하고, 친구들과 카톡을 하거나 밖에서 만나야 에너지가 생긴다." },
+            { id: 4, axis: 'EI', positive: 'I', text: "학교 축제나 대규모 행사보다는 마음이 잘 맞는 소수의 친구 1~2명과 깊게 대화하는 것을 좋아한다." },
+            
+            // S (감각) vs N (직관)
+            { id: 5, axis: 'SN', positive: 'S', text: "선생님이 과제를 내주실 때 모호한 주제보다는 정확히 무엇을 해야 하는지 명확히 짚어주는 것이 좋다." },
+            { id: 6, axis: 'SN', positive: 'N', text: "수업 시간에 배운 지식을 그대로 외우기보다 '이게 왜 이렇게 될까?' 하며 꼬리를 무는 엉뚱한 상상을 자주 한다." },
+            { id: 7, axis: 'SN', positive: 'S', text: "미래에 일어날 막연한 가능성보다는 지금 당장 내 눈앞에 검증된 사실과 경험을 더 신뢰한다." },
+            { id: 8, axis: 'SN', positive: 'N', text: "기존 선배들이 해왔던 뻔한 방식의 동아리 활동보다 새로운 아이디어를 시도하는 도전이 가치 있다고 믿는다." },
+            
+            // T (사고) vs F (감정)
+            { id: 9, axis: 'TF', positive: 'T', text: "친구가 힘든 고민을 털어놓았을 때 위로나 눈물보다는 문제를 어떻게 해결해야 할지 논리적 대안이 먼저 떠오른다." },
+            { id: 10, axis: 'TF', positive: 'F', text: "조별 과제에서 누군가 실수를 하더라도 결과물의 완성도보다 팀원들의 기분과 화목한 분위기를 유지하는 게 더 중요하다." },
+            { id: 11, axis: 'TF', positive: 'T', text: "친구나 선생님으로부터 피드백을 들을 때 기분이 상하기보다 객관적인 지적이라면 덤덤하게 수용한다." },
+            { id: 12, axis: 'TF', positive: 'F', text: "중요한 결정을 내릴 때 차가운 수치나 논리적 인과관계보다 주변 사람들의 마음과 감정을 우선 고려한다." },
+            
+            // J (판단) vs P (인식)
+            { id: 13, axis: 'JP', positive: 'J', text: "시험공부나 방학 생활 계획을 세울 때 주별, 일별로 할 일을 세부적으로 미리 짜놓는 편이다." },
+            { id: 14, axis: 'JP', positive: 'P', text: "여행을 가거나 친구들과 놀 때 빽빽한 시간표를 짜는 것보다 상황에 따라 자유롭게 움직이는 게 좋다." },
+            { id: 15, axis: 'JP', positive: 'J', text: "수행평가나 과제는 마감 직전에 허둥지둥하기보다 며칠 전부터 미리 끝내 두어야 마음이 놓인다." },
+            { id: 16, axis: 'JP', positive: 'P', text: "미리 정해진 규칙이나 딱딱한 스케줄에 얽매이기보다 임기응변과 순발력을 발휘하는 상황이 더 체질에 맞는다." }
+        ];
+
+        // MBTI 진로 매핑 데이터
+        const mbtiResults = {
+            "ISTJ": { title: "철저한 준법 감시관형", strengths: "신중하고 책임감이 강하며 데이터와 사실을 정확하게 다룹니다.", weaknesses: "새로운 변화나 관행을 벗어난 파격적인 제안을 낯설어할 수 있습니다.", jobs: ["공무원", "회계사", "경찰관", "데이터 분석가", "품질관리원"], depts: "행정학과, 회계학과, 경영학부, 컴퓨터공학과", tips: "체계적인 루틴을 설계하여 공인 자격증이나 가산점이 되는 시험 위주로 준비하세요." },
+            "ISFJ": { title: "다정한 수호자형", strengths: "차분하고 헌신적이며 조용히 타인의 필요를 챙기는 능력이 뛰어납니다.", weaknesses: "거절하는 것을 미안해하여 혼자서 과한 짐을 짊어질 수 있습니다.", jobs: ["초등교사", "간호사", "사회복지사", "상담사", "박물관 큐레이터"], depts: "교육학부, 간호학과, 사회복지학과, 아동보육학과", tips: "사람을 보살피거나 교육하는 봉사활동 포트폴리오를 꾸준히 축적해 보세요." },
+            "INFJ": { title: "선한 통찰가형", strengths: "통찰력이 깊고 공감 능력이 뛰어나며 뚜렷한 가치관을 지니고 있습니다.", weaknesses: "마음속 이상향이 높아 현실과의 타협에서 쉽게 피로를 느낍니다.", jobs: ["상담심리사", "작가", "환경활동가", "인사컨설턴트", "예술치료사"], depts: "심리학과, 사회학과, 철학과, 문예창작과", tips: "다양한 입장의 사람들을 인터뷰하거나 내면을 탐구하는 인문학 소양을 쌓으세요." },
+            "INTJ": { title: "철저한 시스템 전략가형", strengths: "논리적이고 독립적이며 전체 시스템을 간파하는 능력이 탁월합니다.", weaknesses: "타인의 감정적 호소에 다소 냉정해 보일 수 있다는 이야기를 듣습니다.", jobs: ["시스템 연구원", "웹 개발자", "금융 분석가", "인공지능 연구원", "교수"], depts: "컴퓨터공학과, 통계학과, 경제학과, 물리학과", tips: "개인 프로젝트나 심화 학술 동아리에 가입해 논리 구조를 증명하는 연습을 해보세요." },
+            "ISTP": { title: "실용적인 기술 장인형", strengths: "상황 적응력이 민찮으며 도구나 기계를 다루는 실무에 강합니다.", weaknesses: "감정 표현을 귀찮아하고 고정된 시간표나 규칙에 쉽게 답답함을 느낍니다.", jobs: ["엔지니어", "파일럿", "화이트해커", "응급구조사", "제품 디자이너"], depts: "기계공학과, 항공운항과, 응급구조학과, 정보보안학과", tips: "이론 공부에만 머물지 말고 실습 공모전이나 직접 무언가를 만드는 대외활동에 나가보세요." },
+            "ISFP": { title: "감각적인 예술가형", strengths: "온화하고 겸손하며 시각적/예술적 미적 감수성이 뛰어납니다.", weaknesses: "남과의 경쟁이나 갈등 상황이 오면 회피하려는 성향이 있습니다.", jobs: ["웹디자이너", "수의사", "영상 편집자", "플로리스트", "조향사"], depts: "시각디자인학과, 수의학과, 미디어영상학과, 원예학과", tips: "나만의 색깔이 담긴 포트폴리오(작품집, 영상 등)를 차근차근 아카이빙 해 나가세요." },
+            "INFP": { title: "이상적인 아이디어 중재자형", strengths: "이해심이 많고 진정성이 있으며 창의적인 스토리텔링에 재능이 있습니다.", weaknesses: "현실적인 제약이나 비판을 들었을 때 지나치게 주눅 들 수 있습니다.", jobs: ["카피라이터", "심리상담사", "웹툰 작가", "콘텐츠 기획자", "일러스트레이터"], depts: "국어국문학과, 심리학과, 미디어커뮤니케이션학과", tips: "자유로운 창작 커뮤니티나 소규모 독립 프로젝트를 통해 성취감을 느껴보세요." },
+            "INTP": { title: "지적인 탐구 사색가형", strengths: "분석력이 날카롭고 호기심이 많으며 혁신적인 가설을 세우는 걸 좋아합니다.", weaknesses: "기존 시스템의 당연한 규칙들을 비효율적이라 여기며 쉽게 반발할 수 있습니다.", jobs: ["연구원", "소프트웨어 아키텍트", "변리사", "빅데이터 전문학자", "게임 기획자"], depts: "컴퓨터과학과, 생명과학과, 신소재공학과, 통계학과", tips: "학업 역량을 심화할 수 있는 과학/IT 경진대회나 심화 논문 읽기 세션에 참여해 보세요." },
+            "ESTP": { title: "기회 포착 활동가형", strengths: "행동력이 넘치고 순발력이 좋아 눈앞의 현실 문제를 빠르게 돌파합니다.", weaknesses: "장기적인 계획을 진득하게 붙잡고 마무리하는 끈기가 부족할 수 있습니다.", jobs: ["마케터", "경찰관/소방관", "스포츠 매니저", "해외 영업원", "스타트업 운영자"], depts: "체육학과, 경영학과, 광고홍보학과, 무역학과", tips: "몸으로 부딪히며 결과를 바로 볼 수 있는 서포터즈 활동이나 현장 인턴십이 유리합니다." },
+            "ESFP": { title: "에너지 넘치는 분위기 메이커형", strengths: "사교성이 좋고 낙천적이며 사람들을 융화시키는 매력이 대단합니다.", weaknesses: "진지한 몰입이 필요한 이론 공부를 금방 지루해할 위험이 있습니다.", jobs: ["이벤트 플래너", "공연 기획자", "항공 승무원", "호텔리어", "쇼호스트"], depts: "관광경영학과, 연극영화과, 미디어커뮤니케이션학과", tips: "축제 기획단이나 대규모 연합 동아리 등 사람을 대면하는 행사 실무를 맡아보세요." },
+            "ENFP": { title: "재기발랄한 프로젝트 기획자형", strengths: "상상력이 자유롭고 긍정적이며 타인에게 영감을 주는 대화에 능합니다.", weaknesses: "시작은 거창하나 마무리가 흐지부지되거나 싫증을 쉽게 냅니다.", jobs: ["브랜드 마케터", "교사", "크리에이티브 디렉터", "공연 기획자", "방송 PD"], depts: "신문방송학과, 교육학과, 광고홍보학과, 경영학과", tips: "아이디어를 발산하는 업무가 중심이 되는 공모전이나 트렌드 분석 모임을 이끌어보세요." },
+            "ENTP": { title: "혁신적인 아이디어 변론가형", strengths: "두뇌 회전이 빠르고 도전정신이 강하며 복잡한 문제를 비틀어 봅니다.", weaknesses: "서열이 엄격하거나 수직적인 전통 집단에서 갈등을 빚기 쉽습니다.", jobs: ["벤처 창업가", "경영 컨설턴트", "신제품 기획자", "정치 분석가", "카피라이터"], depts: "경영학과, 정치외교학과, 산업공학과, 법학과", tips: "창업 동아리나 모의 해커톤, 끝장 토론 대회 등 내 논리를 증명할 무대에 서세요." },
+            "ESTJ": { title: "체계적인 리더십 관리자형", strengths: "조직 능력이 탁월하고 실용적이며 맡은 업무를 끝까지 완수합니다.", weaknesses: "효율성만 따지다 보니 주변 사람들의 감정을 놓치고 독단적으로 보일 수 있습니다.", jobs: ["프로젝트 매니저", "기업 임원", "펀드 매니저", "장교", "법조인"], depts: "경영학과, 경제학과, 군사학과, 법학과", tips: "학생회나 대형 프로젝트 팀의 총무/팀장을 맡아 조직을 실제 운영해보는 경험이 큰 스펙이 됩니다." },
+            "ESFJ": { title: "조화로운 사교 외교관형", strengths: "친절하고 책임감이 강하며 집단의 분위기와 복지를 책임집니다.", weaknesses: "타인의 평판이나 거절에 상처를 깊게 받아 눈치를 볼 수 있습니다.", jobs: ["초등/유치원 교사", "인사담당자", "비서", "승무원", "고객 상담 전문가"], depts: "교육학과, 호텔관광학과, 행정학과, 간호학과", tips: "협동과 팀워크가 핵심인 대외활동 단체에서 핵심 조율자 역할을 맡아보세요." },
+            "ENFJ": { title: "사회를 변화시키는 천생 리더형", strengths: "말솜씨가 좋고 카리스마가 있으며 타인의 잠재력을 이끌어내는 데 능합니다.", weaknesses: "남의 문제를 지나치게 내 문제처럼 몰입하여 번아웃이 올 수 있습니다.", jobs: ["중고교 교사", "시민단체 활동가", "아나운서/앵커", "인재개발(HRD) 전문가"], depts: "교육학과, 미디어커뮤니케이션학과, 심리학과", tips: "청소년 의회나 교육 멘토링단 등 명확한 사회적 가치를 지닌 단체의 리더로 활동하세요." },
+            "ENTJ": { title: "대담한 비전 통솔자형", strengths: "결단력이 있고 장기 비전을 제시하며 조직을 목표로 전진시키는 힘이 있습니다.", weaknesses: "냉정하게 성과 중심적이라 지치거나 힘들어하는 팀원을 다독이는 게 서툽니다.", jobs: ["CEO/창업가", "전략 컨설턴트", "투자 심사역(VC)", "M&A 전문가"], depts: "경영학과, 경제학과, 산업공학과, 정치외교학과", tips: "비즈니스 모델 경진대회나 모의 투자 자문 등 거시적인 기획력을 요하는 곳에 도전하세요." }
+        };
+
+        let currentIdx = 0;
+        let answers = {};
+
+        function startQuiz() {
+            document.getElementById('intro-card').style.display = 'none';
+            document.getElementById('quiz-card').style.display = 'block';
+            currentIdx = 0;
+            answers = {};
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentIdx];
+            document.getElementById('question-text').innerText = `${q.id}. ${q.text}`;
+            
+            // 문항별 맞춤 스케일 텍스트 가독성 최적화
+            if(q.axis === 'EI') {
+                document.getElementById('opt-5').innerText = "매우 그렇다 (주로 적극적인 편)";
+                document.getElementById('opt-1').innerText = "전혀 아니다 (주로 조용한 편)";
+            } else if(q.axis === 'SN') {
+                document.getElementById('opt-5').innerText = "매우 그렇다 (구체적/실실적)";
+                document.getElementById('opt-1').innerText = "전혀 아니다 (추상적/아이디어)";
+            } else {
+                document.getElementById('opt-5').innerText = "매우 그렇다";
+                document.getElementById('opt-1').innerText = "전혀 아니다";
+            }
+
+            const rdos = document.getElementsByName('scale');
+            const savedValue = answers[q.id];
+            
+            for (let rdo of rdos) {
+                rdo.checked = false;
+                if (savedValue && rdo.value == savedValue) {
+                    rdo.checked = true;
+                }
+            }
+
+            document.getElementById('btn-prev').disabled = (currentIdx === 0);
+            document.getElementById('btn-next').innerText = (currentIdx === questions.length - 1) ? "정밀 결과 분석" : "다음 질문";
+
+            const progressPercent = Math.round((currentIdx / questions.length) * 100);
+            document.getElementById('progress-fill').style.width = `${progressPercent}%`;
+            document.getElementById('progress-count').innerText = `질문 ${currentIdx + 1} / ${questions.length}`;
+            document.getElementById('progress-percent').innerText = `${progressPercent}%`;
+        }
+
+        function nextQuestion() {
+            const selected = document.querySelector('input[name="scale"]:checked');
+            if (!selected) {
+                alert("현재 문항의 답변을 선택해 주세요!");
+                return;
+            }
+
+            answers[questions[currentIdx].id] = parseInt(selected.value);
+
+            if (currentIdx < questions.length - 1) {
+                currentIdx++;
+                showQuestion();
+            } else {
+                calculate精밀Result();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIdx > 0) {
+                currentIdx--;
+                showQuestion();
+            }
+        }
+
+        // 양방향 가중치 결합형 정밀 알고리즘
+        function calculate精밀Result() {
+            // 초기값 설정: 지표별 매칭 데이터 분할
+            let axisStats = {
+                'EI': { positiveScore: 0, negativeScore: 0, posCount: 0, negCount: 0 },
+                'SN': { positiveScore: 0, negativeScore: 0, posCount: 0, negCount: 0 },
+                'TF': { positiveScore: 0, negativeScore: 0, posCount: 0, negCount: 0 },
+                'JP': { positiveScore: 0, negativeScore: 0, posCount: 0, negCount: 0 }
+            };
+
+            questions.forEach(q => {
+                let userAns = answers[q.id]; // 1 ~ 5 점
+                
+                // 3점(보통)은 양쪽에 동일 배분하되, 가중치를 줄이기 위해 기본 베이스만 제공
+                if(q.positive === 'E' || q.positive === 'S' || q.positive === 'T' || q.positive === 'J') {
+                    axisStats[q.axis].positiveScore += userAns;
+                    axisStats[q.axis].posCount++;
+                } else {
+                    // 역방향 질문인 경우 역채점(6 - 선택점수)을 통해 정방향 성향에 누적 연산
+                    axisStats[q.axis].negativeScore += (6 - userAns);
+                    axisStats[q.axis].negCount++;
+                }
+            });
+
+            // 최종 지표 비중 백분율 연산 (최대 가능 점수 대비 획득 점수)
+            let finalPct = {};
+            
+            // EI 축 연산 (기준점 50%를 넘으면 E, 아니면 I)
+            let totalEIVirtual = (axisStats['EI'].positiveScore + axisStats['EI'].negativeScore);
+            let pctE = (totalEIVirtual / ((axisStats['EI'].posCount + axisStats['EI'].negCount) * 5)) * 100;
+            finalPct['EI'] = Math.min(Math.max(Math.round(pctE), 5), 95); // 시각 효과를 위해 최소5%~최대95% 보정
+
+            // SN 축 연산 (기준점 50%를 넘으면 S, 아니면 N)
+            let totalSNVirtual = (axisStats['SN'].positiveScore + axisStats['SN'].negativeScore);
+            let pctS = (totalSNVirtual / ((axisStats['SN'].posCount + axisStats['SN'].negCount) * 5)) * 100;
+            finalPct['SN'] = Math.min(Math.max(Math.round(pctS), 5), 95);
+
+            // TF 축 연산 (기준점 50%를 넘으면 T, 아니면 F)
+            let totalTFVirtual = (axisStats['TF'].positiveScore + axisStats['TF'].negativeScore);
+            let pctT = (totalTFVirtual / ((axisStats['TF'].posCount + axisStats['TF'].negCount) * 5)) * 100;
+            finalPct['TF'] = Math.min(Math.max(Math.round(pctT), 5), 95);
+
+            // JP 축 연산 (기준점 50%를 넘으면 J, 아니면 P)
+            let totalJPVirtual = (axisStats['JP'].positiveScore + axisStats['JP'].negativeScore);
+            let pctJ = (totalJPVirtual / ((axisStats['JP'].posCount + axisStats['JP'].negCount) * 5)) * 100;
+            finalPct['JP'] = Math.min(Math.max(Math.round(pctJ), 5), 95);
+
+            // MBTI 코드 결정 문자열 조합
+            let finalMBTI = "";
+            finalMBTI += (finalPct['EI'] >= 50) ? "E" : "I";
+            finalMBTI += (finalPct['SN'] >= 50) ? "S" : "N";
+            finalMBTI += (finalPct['TF'] >= 50) ? "T" : "F";
+            finalMBTI += (finalPct['JP'] >= 50) ? "J" : "P";
+
+            displayResult(finalMBTI, finalPct['EI'], finalPct['SN'], finalPct['TF'], finalPct['JP']);
+        }
+
+        function displayResult(mbti, pctEI, pctSN, pctTF, pctJP) {
+            document.getElementById('quiz-card').style.display = 'none';
+            document.getElementById('result-card').style.display = 'block';
+
+            const data = mbtiResults[mbti] || mbtiResults["ENFP"];
+            document.getElementById('result-mbti').innerText = mbti;
+            document.getElementById('result-title').innerText = data.title;
+
+            // 정밀 밸런스 그래프 바 연동
+            document.getElementById('bar-ei').style.width = `${pctEI}%`;
+            document.getElementById('lbl-ei').innerText = `${pctEI}% : ${100 - pctEI}%`;
+
+            document.getElementById('bar-sn').style.width = `${pctSN}%`;
+            document.getElementById('lbl-sn').innerText = `${pctSN}% : ${100 - pctSN}%`;
+
+            document.getElementById('bar-tf').style.width = `${pctTF}%`;
+            document.getElementById('lbl-tf').innerText = `${pctTF}% : ${100 - pctTF}%`;
+
+            document.getElementById('bar-jp').style.width = `${pctJP}%`;
+            document.getElementById('lbl-jp').innerText = `${pctJP}% : ${100 - pctJP}%`;
+
+            // 진로 텍스트 데이터 파싱
+            document.getElementById('txt-strengths').innerText = data.strengths;
+            document.getElementById('txt-weaknesses').innerText = data.weaknesses;
+            document.getElementById('txt-departments').innerText = data.depts;
+            document.getElementById('txt-tips').innerText = data.tips;
+
+            // 직업 추천 태그 노드 동적 생성
+            const jobContainer = document.getElementById('txt-jobs');
+            jobContainer.innerHTML = "";
+            data.jobs.forEach(job => {
+                const tag = document.createElement('span');
+                tag.className = 'job-tag';
+                tag.innerText = job;
+                jobContainer.appendChild(tag);
+            });
+            
+            // 페이지 최상단 스크롤 이동
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function restartQuiz() {
+            document.getElementById('result-card').style.display = 'none';
+            document.getElementById('intro-card').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
